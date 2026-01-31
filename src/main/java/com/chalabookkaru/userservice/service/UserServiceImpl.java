@@ -7,11 +7,13 @@ import com.chalabookkaru.userservice.entity.User;
 import com.chalabookkaru.userservice.exception.UserException;
 import com.chalabookkaru.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import static com.chalabookkaru.userservice.constants.UserConstants.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -21,31 +23,45 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createUser(SignupRequest signupRequest) throws UserException {
-        Optional<User> userOptional = userRepository.findByEmail(signupRequest.getEmail());
+
+        String email = signupRequest.getEmail();
+        Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
-            throw new UserException("User already ahe!! Navin User Banav!!");
+            throw new UserException(USER_ALREADY_EXIST, HttpStatus.CONFLICT);
         }
+
         User userToSave = new User();
-        userToSave.setEmail(signupRequest.getEmail());
+
+        userToSave.setEmail(email);
+        userToSave.setUsername(signupRequest.getUsername());
         userToSave.setPassword(signupRequest.getPassword());
-        userToSave.setCreatedAt(String.valueOf(LocalDateTime.now()));
-        User savedUser= userRepository.save(userToSave);
+        userToSave.setCreatedAt(LocalDateTime.now());
+
+        User savedUser = userRepository.save(userToSave);
 
         UserResponse response = new UserResponse();
-        response.setUserId(savedUser.getId());
-        response.setMessage("User Banla!!");
+        response.setUsername(savedUser.getUsername());
+        response.setMessage(ACCOUNT_CREATED_SUCCESS);
         return response;
     }
 
     @Override
     public UserResponse loginUser(LoginRequest loginRequest) throws UserException {
-        Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+
+        String loginId = loginRequest.getEmailOrUsername();
+        Optional<User> userOptional = loginId.contains(EMAIL_CHECK) ? userRepository.findByEmail(loginId) : userRepository.findByUsername(loginId);
+
         if (userOptional.isEmpty()) {
-            throw new UserException("He User Nahiye amchyakde, jaa Account Banav!!");
+            throw new UserException(LOGIN_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
-        UserResponse loginResponse= new UserResponse();
-        loginResponse.setUserId(userOptional.get().getId());
-        loginResponse.setMessage("Login Zalaaaa reeeee!!!");
+        UserResponse loginResponse = new UserResponse();
+        loginResponse.setUsername(userOptional.get().getUsername());
+
+        if (loginRequest.getPassword().equals(userOptional.get().getPassword())) {
+            loginResponse.setMessage(LOGIN_SUCCESS);
+        } else {
+            throw new UserException(INCORRECT_PASSWORD, HttpStatus.BAD_REQUEST);
+        }
         return loginResponse;
     }
 }
