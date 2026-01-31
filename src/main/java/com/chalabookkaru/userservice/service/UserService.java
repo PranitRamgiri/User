@@ -7,5 +7,6 @@ import com.chalabookkaru.userservice.exception.UserException;
 
 public interface UserService {
     UserResponse createUser(SignupRequest signupRequest) throws UserException;
+
     UserResponse loginUser(LoginRequest loginRequest) throws UserException;
 }

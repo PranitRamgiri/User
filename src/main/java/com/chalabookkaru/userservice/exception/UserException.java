@@ -1,8 +1,17 @@
 package com.chalabookkaru.userservice.exception;
 
-public class UserException extends Exception{
+import org.springframework.http.HttpStatus;
 
-    public UserException(String msg){
+public class UserException extends RuntimeException {
+
+    private final HttpStatus httpStatus;
+
+    public UserException(String msg, HttpStatus httpStatus) {
         super(msg);
+        this.httpStatus = httpStatus;
+    }
+
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
     }
 }
