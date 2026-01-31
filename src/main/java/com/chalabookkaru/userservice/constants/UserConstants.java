@@ -1,5 +1,11 @@
 package com.chalabookkaru.userservice.constants;
 
+/**
+ * Holds application-wide constants for the users service.
+ * This class provides string constants for table name, endpoint paths and
+ * user-facing messages related to user signup and login operations.
+ */
+
 public class UserConstants {
     public static final String TABLE = "users";
     public static final String BASE_URL = "/users";
