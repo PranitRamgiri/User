@@ -1,9 +1,5 @@
 package com.chalabookkaru.userservice.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
 
 /**
@@ -22,11 +18,7 @@ import java.time.LocalDateTime;
  * - The timestamp, status, and message are set and the object is serialized in the HTTP response body.
  */
 
-@Getter
-@Setter
-@AllArgsConstructor
-public class ErrorResponse {
-    private LocalDateTime timestamp;
-    private int status;
-    private String message;
+
+public record ErrorResponse(LocalDateTime timestamp, int status, String message) {
+
 }

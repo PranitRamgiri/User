@@ -1,10 +1,5 @@
 package com.chalabookkaru.userservice.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 /**
  * Data transfer object used to return results of user-related operations.
  * <p>
@@ -21,14 +16,26 @@ import lombok.Setter;
  * 1. A service or controller constructs an instance (using the all-args constructor or setters).
  * 2. The object is returned from a controller method (commonly wrapped in ResponseEntity).
  * 3. Spring's HTTP message converters serialize the object to JSON for the HTTP response.
- *
  */
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class UserResponse {
     private String username;
     private String message;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

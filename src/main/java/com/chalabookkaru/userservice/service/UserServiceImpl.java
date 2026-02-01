@@ -19,20 +19,22 @@ import static com.chalabookkaru.userservice.constants.UserConstants.*;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Override
     public UserResponse createUser(SignupRequest signupRequest) throws UserException {
 
-        String email = signupRequest.getEmail();
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isPresent()) {
-            throw new UserException(USER_ALREADY_EXIST, HttpStatus.CONFLICT);
+        if (userRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
+            throw new UserException(EMAIL_ALREADY_EXISTS, HttpStatus.CONFLICT);
+        }
+
+        if (userRepository.findByUsername(signupRequest.getUsername()).isPresent()) {
+            throw new UserException(USERNAME_ALREADY_EXISTS, HttpStatus.CONFLICT);
         }
 
         User userToSave = new User();
 
-        userToSave.setEmail(email);
+        userToSave.setEmail(signupRequest.getEmail());
         userToSave.setUsername(signupRequest.getUsername());
         userToSave.setPassword(signupRequest.getPassword());
         userToSave.setCreatedAt(LocalDateTime.now());
@@ -49,11 +51,13 @@ public class UserServiceImpl implements UserService {
     public UserResponse loginUser(LoginRequest loginRequest) throws UserException {
 
         String loginId = loginRequest.getEmailOrUsername();
-        Optional<User> userOptional = loginId.contains(EMAIL_CHECK) ? userRepository.findByEmail(loginId) : userRepository.findByUsername(loginId);
+        Optional<User> userOptional = loginId.contains(EMAIL_CHECK) ?
+                userRepository.findByEmail(loginId) : userRepository.findByUsername(loginId);
 
         if (userOptional.isEmpty()) {
             throw new UserException(LOGIN_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
+
         UserResponse loginResponse = new UserResponse();
         loginResponse.setUsername(userOptional.get().getUsername());
 

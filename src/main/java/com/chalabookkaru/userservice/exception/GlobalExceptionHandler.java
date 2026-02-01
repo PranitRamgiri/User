@@ -9,21 +9,37 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserException.class)
-    public ResponseEntity<ErrorResponse> handleUser(UserException ex) {
-        return new ResponseEntity<>(
-                new ErrorResponse(LocalDateTime.now(), ex.getHttpStatus().value(), ex.getMessage()),
-                HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> handleUserException(UserException ex) {
+        return buildErrorResponse(ex.getMessage(), ex.getHttpStatus());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<String>> handleMethodErrors(MethodArgumentNotValidException ex) {
-        List<String> messages = ex.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
-        return ResponseEntity.badRequest().body(messages);
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+        return buildErrorResponse(message, HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+        return buildErrorResponse(
+                "Internal Server Error in UserMS",
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
+
+    private ResponseEntity<ErrorResponse> buildErrorResponse(String message, HttpStatus status) {
+        return new ResponseEntity<>(
+                new ErrorResponse(LocalDateTime.now(), status.value(), message),
+                status
+        );
     }
 }
