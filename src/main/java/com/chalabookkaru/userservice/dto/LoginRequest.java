@@ -1,9 +1,6 @@
 package com.chalabookkaru.userservice.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 /**
@@ -23,9 +20,7 @@ import lombok.Setter;
  * - If valid, the controller/service reads emailOrUsername and password to authenticate the user.
  */
 
-@Getter
-@Setter
-@NoArgsConstructor
+
 public class LoginRequest {
 
     @NotBlank(message = "{user.emailOrUsername.notBlank}")
@@ -33,4 +28,12 @@ public class LoginRequest {
 
     @NotBlank(message = "{user.password.notBlank}")
     private String password;
+
+    public String getEmailOrUsername() {
+        return emailOrUsername;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }

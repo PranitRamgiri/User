@@ -4,9 +4,6 @@ package com.chalabookkaru.userservice.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * SignupRequest
@@ -33,9 +30,7 @@ import lombok.Setter;
  * - Consider updating the password @Size message key to a password-specific key for clearer messages.
  */
 
-@Getter
-@Setter
-@NoArgsConstructor
+
 public class SignupRequest {
 
     @Email(message = "{user.email.invalid}")
@@ -49,4 +44,16 @@ public class SignupRequest {
     @NotBlank(message = "{user.password.notBlank}")
     @Size(min = 5, max = 15, message = "{user.email.invalid}")
     private String password;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }
